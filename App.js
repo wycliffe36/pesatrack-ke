@@ -1,35 +1,69 @@
-import { StyleSheet, Text, View } from 'react-native';
-
-// You can import supported modules from npm
-import { Card } from 'react-native-paper';
-
-// or any files within the Snack
-import AssetExample from './components/AssetExample';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
 
 export default function App() {
+  const [amount, setAmount] = useState('');
+  const [desc, setDesc] = useState('');
+  const [transactions, setTransactions] = useState([]);
+
+  const addTransaction = (type) => {
+    if (!amount) return;
+    const newTx = {
+      id: Date.now().toString(),
+      amount: parseFloat(amount),
+      desc: desc || 'No description',
+      type,
+    };
+    setTransactions([newTx, ...transactions]);
+    setAmount('');
+    setDesc('');
+  };
+
+  const balance = transactions.reduce((sum, t) => 
+    t.type === 'income' ? sum + t.amount : sum - t.amount, 0);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.paragraph}>
-        Change code in the editor and watch it change on your phone! Save to get a shareable url.
-      </Text>
-      <Card>
-        <AssetExample />
-      </Card>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>PesaTrack</Text>
+      <Text style={styles.balance}>Ksh {balance.toFixed(2)}</Text>
+      
+      <TextInput style={styles.input} placeholder="Amount" keyboardType="numeric" value={amount} onChangeText={setAmount} />
+      <TextInput style={styles.input} placeholder="Description" value={desc} onChangeText={setDesc} />
+      
+      <View style={styles.row}>
+        <TouchableOpacity style={[styles.btn, styles.income]} onPress={() => addTransaction('income')}>
+          <Text style={styles.btnText}>+ Income</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.btn, styles.expense]} onPress={() => addTransaction('expense')}>
+          <Text style={styles.btnText}>- Expense</Text>
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={transactions}
+        keyExtractor={item => item.id}
+        renderItem={({item}) => (
+          <View style={styles.item}>
+            <Text>{item.desc}</Text>
+            <Text style={{color: item.type === 'income' ? 'green' : 'red'}}>
+              {item.type === 'income' ? '+' : '-'} {item.amount}
+            </Text>
+          </View>
+        )}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1',
-    padding: 8,
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
+  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
+  title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginTop: 20 },
+  balance: { fontSize: 22, textAlign: 'center', marginVertical: 15 },
+  input: { borderWidth: 1, borderColor: '#ccc', padding: 12, borderRadius: 8, marginBottom: 10 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
+  btn: { flex: 1, padding: 15, borderRadius: 8, alignItems: 'center', marginHorizontal: 5 },
+  income: { backgroundColor: '#4CAF50' },
+  expense: { backgroundColor: '#F44336' },
+  btnText: { color: '#fff', fontWeight: 'bold' },
+  item: { flexDirection: 'row', justifyContent: 'space-between', padding: 15, borderBottomWidth: 1, borderBottomColor: '#eee' }
 });
