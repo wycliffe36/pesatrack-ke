@@ -1,4 +1,4 @@
-# PesaTrack KE 🇰🇪
+# PesaTrack KE
 
 PesaTrack KE is a simple mobile expense tracker built with React Native (Expo) for Kenyan users.
 
@@ -13,7 +13,8 @@ PesaTrack KE is a simple mobile expense tracker built with React Native (Expo) f
 - AsyncStorage
 
 ## How to Run
-git clone https://github.com/wycliffe36/pesatrack-ke
-cd pesatrack-ke
-npm install
-npx expo start
+
+    git clone https://github.com/wycliffe36/pesatrack-ke
+    cd pesatrack-ke
+    npm install
+    npx expo start
